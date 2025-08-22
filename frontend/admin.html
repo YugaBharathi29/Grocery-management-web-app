@@ -73,7 +73,7 @@
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 px-0">
-                <div class="sidebar">
+                <div class="sidebar d-flex flex-column">
                     <div class="p-4">
                         <h4 class="text-white">
                             <i class="bi bi-shield-check"></i> Admin Panel
@@ -93,9 +93,6 @@
                         </a>
                         <a class="nav-link" href="#" id="ordersTab">
                             <i class="bi bi-cart-check"></i> Orders
-                        </a>
-                        <a class="nav-link" href="#" id="customersTab">
-                            <i class="bi bi-people"></i> Customers
                         </a>
                     </nav>
                     
@@ -305,37 +302,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Customers Content -->
-                    <div id="customersContent" style="display: none;">
-                        <div class="table-card">
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Email</th>
-                                                <th>Phone</th>
-                                                <th>Orders</th>
-                                                <th>Status</th>
-                                                <th>Joined</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="customersTable">
-                                            <tr>
-                                                <td colspan="6" class="text-center py-4">
-                                                    <div class="spinner-border text-primary" role="status">
-                                                        <span class="visually-hidden">Loading...</span>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -517,6 +483,50 @@
             }
         }
         
+        // Navigation functions
+        function showSection(sectionId) {
+            // Hide all content sections
+            document.querySelectorAll('[id$="Content"]').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId + 'Content').style.display = 'block';
+            
+            // Update navigation
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.getElementById(sectionId + 'Tab').classList.add('active');
+            
+            // Update page title
+            const titles = {
+                'dashboard': { title: 'Dashboard', subtitle: 'Overview of your store' },
+                'products': { title: 'Products', subtitle: 'Manage your products' },
+                'categories': { title: 'Categories', subtitle: 'Manage product categories' },
+                'orders': { title: 'Orders', subtitle: 'Manage customer orders' }
+            };
+            
+            document.getElementById('pageTitle').textContent = titles[sectionId].title;
+            document.getElementById('pageSubtitle').textContent = titles[sectionId].subtitle;
+            
+            // Load section data
+            switch (sectionId) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'products':
+                    loadProductsData();
+                    break;
+                case 'categories':
+                    loadCategoriesData();
+                    break;
+                case 'orders':
+                    loadOrdersData();
+                    break;
+            }
+        }
+        
         // Load dashboard data
         async function loadDashboardData() {
             try {
@@ -532,6 +542,10 @@
                 const totalRevenue = allOrders.reduce((sum, order) => sum + parseFloat(order.total_amount), 0);
                 document.getElementById('totalRevenue').textContent = formatPrice(totalRevenue);
                 
+                // Get unique customers count
+                const uniqueCustomers = new Set(allOrders.map(order => order.user_name)).size;
+                document.getElementById('totalCustomers').textContent = uniqueCustomers;
+                
                 // Load categories
                 allCategories = await apiCall('/categories');
                 
@@ -540,6 +554,43 @@
                 
             } catch (error) {
                 showToast('Failed to load dashboard data', 'danger');
+            }
+        }
+        
+        // Load products data
+        async function loadProductsData() {
+            try {
+                allProducts = await apiCall('/products');
+                if (allCategories.length === 0) {
+                    allCategories = await apiCall('/categories');
+                }
+                renderProducts();
+                populateProductCategories();
+            } catch (error) {
+                showToast('Failed to load products data', 'danger');
+            }
+        }
+        
+        // Load categories data
+        async function loadCategoriesData() {
+            try {
+                allCategories = await apiCall('/categories');
+                if (allProducts.length === 0) {
+                    allProducts = await apiCall('/products');
+                }
+                renderCategories();
+            } catch (error) {
+                showToast('Failed to load categories data', 'danger');
+            }
+        }
+        
+        // Load orders data
+        async function loadOrdersData() {
+            try {
+                allOrders = await apiCall('/admin/orders');
+                renderAllOrders();
+            } catch (error) {
+                showToast('Failed to load orders data', 'danger');
             }
         }
         
@@ -599,4 +650,238 @@
                             </span>
                         </td>
                         <td>
-                            <span class="badge ${product.is_active ? 'bg-success' :
+                            <span class="badge ${product.is_active ? 'bg-success' : 'bg-danger'}">
+                                ${product.is_active ? 'Active' : 'Inactive'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="editProduct(${product.id})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct(${product.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function renderCategories() {
+            const tbody = document.getElementById('categoriesTable');
+            
+            if (allCategories.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No categories found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = allCategories.map(category => {
+                const productCount = allProducts.filter(p => p.category_id === category.id).length;
+                return `
+                    <tr>
+                        <td>${category.name}</td>
+                        <td>${category.description || 'N/A'}</td>
+                        <td><span class="badge bg-info">${productCount}</span></td>
+                        <td>
+                            <span class="badge ${category.is_active ? 'bg-success' : 'bg-danger'}">
+                                ${category.is_active ? 'Active' : 'Inactive'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="editCategory(${category.id})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(${category.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function renderAllOrders() {
+            const tbody = document.getElementById('allOrdersTable');
+            
+            if (allOrders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">No orders found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = allOrders.map(order => `
+                <tr>
+                    <td>#${order.id}</td>
+                    <td>${order.user_name}</td>
+                    <td>${formatPrice(order.total_amount)}</td>
+                    <td>${getStatusBadge(order.status)}</td>
+                    <td>${formatDate(order.created_at)}</td>
+                    <td>
+                        <select class="form-select form-select-sm" onchange="updateOrderStatus(${order.id}, this.value)">
+                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="confirmed" ${order.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                            <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
+                            <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                            <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function populateProductCategories() {
+            const select = document.getElementById('productCategory');
+            select.innerHTML = '<option value="">Select Category</option>' +
+                allCategories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('');
+        }
+        
+        // Action functions
+        async function updateOrderStatus(orderId, status) {
+            try {
+                await apiCall(`/admin/orders/${orderId}/status`, 'PUT', { status });
+                showToast('Order status updated successfully', 'success');
+                
+                // Update the order in our local array
+                const orderIndex = allOrders.findIndex(order => order.id === orderId);
+                if (orderIndex !== -1) {
+                    allOrders[orderIndex].status = status;
+                }
+                
+                // Refresh dashboard if we're on it
+                if (document.getElementById('dashboardContent').style.display !== 'none') {
+                    renderRecentOrders(allOrders.slice(0, 10));
+                }
+            } catch (error) {
+                showToast('Failed to update order status', 'danger');
+            }
+        }
+        
+        async function addProduct(productData) {
+            try {
+                await apiCall('/products', 'POST', productData);
+                showToast('Product added successfully', 'success');
+                await loadProductsData();
+                bootstrap.Modal.getInstance(document.getElementById('addProductModal')).hide();
+                document.getElementById('addProductForm').reset();
+            } catch (error) {
+                showToast('Failed to add product', 'danger');
+            }
+        }
+        
+        async function addCategory(categoryData) {
+            try {
+                await apiCall('/categories', 'POST', categoryData);
+                showToast('Category added successfully', 'success');
+                await loadCategoriesData();
+                bootstrap.Modal.getInstance(document.getElementById('addCategoryModal')).hide();
+                document.getElementById('addCategoryForm').reset();
+            } catch (error) {
+                showToast('Failed to add category', 'danger');
+            }
+        }
+        
+        function editProduct(productId) {
+            // This would open an edit modal - for now just show a placeholder
+            showToast('Edit product functionality would be implemented here', 'info');
+        }
+        
+        function deleteProduct(productId) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                showToast('Delete product functionality would be implemented here', 'info');
+            }
+        }
+        
+        function editCategory(categoryId) {
+            // This would open an edit modal - for now just show a placeholder
+            showToast('Edit category functionality would be implemented here', 'info');
+        }
+        
+        function deleteCategory(categoryId) {
+            if (confirm('Are you sure you want to delete this category?')) {
+                showToast('Delete category functionality would be implemented here', 'info');
+            }
+        }
+        
+        function goToStore() {
+            window.location.href = 'index.html';
+        }
+        
+        async function logout() {
+            try {
+                await apiCall('/auth/logout', 'POST');
+                showToast('Logged out successfully', 'success');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            } catch (error) {
+                showToast('Logout failed', 'danger');
+            }
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check admin authentication
+            const isAuthenticated = await checkAdminAuth();
+            if (!isAuthenticated) return;
+            
+            // Load initial data
+            await loadDashboardData();
+            
+            // Navigation event listeners
+            document.getElementById('dashboardTab').addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('dashboard');
+            });
+            
+            document.getElementById('productsTab').addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('products');
+            });
+            
+            document.getElementById('categoriesTab').addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('categories');
+            });
+            
+            document.getElementById('ordersTab').addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('orders');
+            });
+            
+            // Form event listeners
+            document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const productData = {
+                    name: document.getElementById('productName').value,
+                    description: document.getElementById('productDescription').value,
+                    price: parseFloat(document.getElementById('productPrice').value),
+                    stock_quantity: parseInt(document.getElementById('productStock').value),
+                    category_id: parseInt(document.getElementById('productCategory').value),
+                    image_url: document.getElementById('productImage').value,
+                    sku: document.getElementById('productSku').value
+                };
+                
+                await addProduct(productData);
+            });
+            
+            document.getElementById('addCategoryForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const categoryData = {
+                    name: document.getElementById('categoryName').value,
+                    description: document.getElementById('categoryDescription').value,
+                    image_url: document.getElementById('categoryImage').value
+                };
+                
+                await addCategory(categoryData);
+            });
+            
+            // When modals are shown, populate category dropdown
+            document.getElementById('addProductModal').addEventListener('show.bs.modal', () => {
+                populateProductCategories();
+            });
+        });
+    </script>
+</body>
+</html>
