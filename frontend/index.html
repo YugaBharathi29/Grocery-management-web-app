@@ -243,3 +243,839 @@
                 <div class="row">
                     <div class="col-md-3">
                         <h5>Filter by Category</h5>
+                        <div class="list-group" id="categoryFilter">
+                            <button class="list-group-item list-group-item-action active" data-category="">
+                                All Products
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3>Products</h3>
+                            <div class="d-flex align-items-center">
+                                <label class="me-2">Sort by:</label>
+                                <select class="form-select form-select-sm" id="sortSelect" style="width: auto;">
+                                    <option value="name">Name</option>
+                                    <option value="price-low">Price: Low to High</option>
+                                    <option value="price-high">Price: High to Low</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" id="allProductsContainer">
+                            <div class="col-12 text-center">
+                                <div class="spinner-border text-primary loading show" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Page -->
+        <div id="cartPage" style="display: none;">
+            <div class="container mt-4">
+                <h2><i class="bi bi-cart"></i> Shopping Cart</h2>
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div id="cartItemsContainer">
+                            <div class="text-center">
+                                <div class="spinner-border text-primary loading show" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Order Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <span>Subtotal:</span>
+                                    <span id="cartSubtotal">$0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Delivery:</span>
+                                    <span>Free</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between h5">
+                                    <span>Total:</span>
+                                    <span id="cartTotal">$0.00</span>
+                                </div>
+                                <button class="btn btn-primary w-100 mt-3" id="checkoutBtn" disabled>
+                                    Proceed to Checkout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Modal -->
+        <div class="modal fade" id="loginModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Login</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label for="loginEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="loginEmail" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="loginPassword" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="loginPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Login</button>
+                        </form>
+                        <div class="text-center mt-3">
+                            <a href="#" id="showRegisterModal">Don't have an account? Register</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Modal -->
+        <div class="modal fade" id="registerModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Register</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="registerForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="registerFirstName" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="registerFirstName" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="registerLastName" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="registerLastName" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="registerEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="registerEmail" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="registerPhone" class="form-label">Phone (Optional)</label>
+                                <input type="tel" class="form-control" id="registerPhone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="registerPassword" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="registerPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Register</button>
+                        </form>
+                        <div class="text-center mt-3">
+                            <a href="#" id="showLoginModal">Already have an account? Login</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout Modal -->
+        <div class="modal fade" id="checkoutModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Checkout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="checkoutForm">
+                            <h6>Shipping Address</h6>
+                            <div class="mb-3">
+                                <textarea class="form-control" id="shippingAddress" rows="4" 
+                                         placeholder="Enter your complete address..." required></textarea>
+                            </div>
+                            <div class="border p-3 mb-3">
+                                <h6>Order Summary</h6>
+                                <div id="checkoutSummary"></div>
+                                <hr>
+                                <div class="d-flex justify-content-between h5">
+                                    <span>Total:</span>
+                                    <span id="checkoutTotal">$0.00</span>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Place Order</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5><i class="bi bi-basket"></i> GroceryMart</h5>
+                    <p>Your trusted online grocery store delivering fresh products to your doorstep.</p>
+                </div>
+                <div class="col-lg-2 mb-4">
+                    <h6>Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light text-decoration-none">Home</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Products</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">About</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 mb-4">
+                    <h6>Customer Service</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light text-decoration-none">Help Center</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Returns</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Shipping Info</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Track Order</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 mb-4">
+                    <h6>Connect With Us</h6>
+                    <div class="d-flex">
+                        <a href="#" class="text-light me-3"><i class="bi bi-facebook fs-4"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-twitter fs-4"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-instagram fs-4"></i></a>
+                        <a href="#" class="text-light"><i class="bi bi-envelope fs-4"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2025 GroceryMart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:5000/api';
+        
+        // Global State
+        let currentUser = null;
+        let cartItems = [];
+        let allProducts = [];
+        let allCategories = [];
+        let currentPage = 'home';
+
+        // Utility Functions
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include'
+            };
+            
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || 'API call failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('API call failed:', error);
+                throw error;
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            toast.style.cssText = 'top: 80px; right: 20px; z-index: 9999; min-width: 300px;';
+            toast.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 5000);
+        }
+
+        function formatPrice(price) {
+            return `${parseFloat(price).toFixed(2)}`;
+        }
+
+        function showPage(pageName) {
+            document.querySelectorAll('[id$="Page"]').forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(pageName + 'Page').style.display = 'block';
+            currentPage = pageName;
+            
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            if (pageName === 'home') {
+                document.getElementById('homeLink').classList.add('active');
+            } else if (pageName === 'products') {
+                document.getElementById('productsLink').classList.add('active');
+            }
+        }
+
+        // Authentication Functions
+        async function login(email, password) {
+            try {
+                const result = await apiCall('/auth/login', 'POST', { email, password });
+                currentUser = result.user;
+                updateUI();
+                showToast('Login successful!', 'success');
+                return result;
+            } catch (error) {
+                showToast(error.message, 'danger');
+                throw error;
+            }
+        }
+
+        async function register(userData) {
+            try {
+                const result = await apiCall('/auth/register', 'POST', userData);
+                currentUser = result.user;
+                updateUI();
+                showToast('Registration successful!', 'success');
+                return result;
+            } catch (error) {
+                showToast(error.message, 'danger');
+                throw error;
+            }
+        }
+
+        async function logout() {
+            try {
+                await apiCall('/auth/logout', 'POST');
+                currentUser = null;
+                cartItems = [];
+                updateUI();
+                showToast('Logged out successfully!', 'success');
+                showPage('home');
+            } catch (error) {
+                showToast(error.message, 'danger');
+            }
+        }
+
+        async function checkAuthStatus() {
+            try {
+                const profile = await apiCall('/auth/profile');
+                currentUser = profile;
+                updateUI();
+            } catch (error) {
+                currentUser = null;
+                updateUI();
+            }
+        }
+
+        // Product Functions
+        async function loadProducts(categoryId = null, searchQuery = null) {
+            try {
+                let endpoint = '/products';
+                const params = new URLSearchParams();
+                
+                if (categoryId) {
+                    params.append('category_id', categoryId);
+                }
+                
+                if (searchQuery) {
+                    params.append('q', searchQuery);
+                }
+                
+                if (params.toString()) {
+                    endpoint += '?' + params.toString();
+                }
+                
+                allProducts = await apiCall(endpoint);
+                return allProducts;
+            } catch (error) {
+                showToast('Failed to load products', 'danger');
+                return [];
+            }
+        }
+
+        async function loadCategories() {
+            try {
+                allCategories = await apiCall('/categories');
+                return allCategories;
+            } catch (error) {
+                showToast('Failed to load categories', 'danger');
+                return [];
+            }
+        }
+
+        // Cart Functions
+        async function loadCart() {
+            if (!currentUser) {
+                cartItems = [];
+                updateCartUI();
+                return;
+            }
+            
+            try {
+                const cart = await apiCall('/cart');
+                cartItems = cart.items || [];
+                updateCartUI();
+            } catch (error) {
+                showToast('Failed to load cart', 'danger');
+                cartItems = [];
+                updateCartUI();
+            }
+        }
+
+        async function addToCart(productId, quantity = 1) {
+            if (!currentUser) {
+                showToast('Please login to add items to cart', 'warning');
+                document.getElementById('loginBtn').click();
+                return;
+            }
+            
+            try {
+                await apiCall('/cart/items', 'POST', { product_id: productId, quantity });
+                await loadCart();
+                showToast('Item added to cart!', 'success');
+            } catch (error) {
+                showToast(error.message, 'danger');
+            }
+        }
+
+        async function updateCartItem(itemId, quantity) {
+            try {
+                if (quantity <= 0) {
+                    await removeFromCart(itemId);
+                    return;
+                }
+                
+                await apiCall(`/cart/items/${itemId}`, 'PUT', { quantity });
+                await loadCart();
+            } catch (error) {
+                showToast('Failed to update cart item', 'danger');
+            }
+        }
+
+        async function removeFromCart(itemId) {
+            try {
+                await apiCall(`/cart/items/${itemId}`, 'DELETE');
+                await loadCart();
+                showToast('Item removed from cart', 'info');
+            } catch (error) {
+                showToast('Failed to remove item from cart', 'danger');
+            }
+        }
+
+        // Order Functions
+        async function createOrder(shippingAddress) {
+            if (!currentUser) {
+                showToast('Please login to place an order', 'warning');
+                return;
+            }
+            
+            try {
+                const result = await apiCall('/orders', 'POST', { shipping_address: shippingAddress });
+                await loadCart(); // Refresh cart (should be empty now)
+                showToast('Order placed successfully!', 'success');
+                return result;
+            } catch (error) {
+                showToast(error.message, 'danger');
+                throw error;
+            }
+        }
+
+        // UI Update Functions
+        function updateUI() {
+            const userMenu = document.getElementById('userMenu');
+            const guestMenu = document.getElementById('guestMenu');
+            const userName = document.getElementById('userName');
+            
+            if (currentUser) {
+                userMenu.style.display = 'block';
+                guestMenu.style.display = 'none';
+                userName.textContent = currentUser.first_name;
+                loadCart();
+            } else {
+                userMenu.style.display = 'none';
+                guestMenu.style.display = 'block';
+                cartItems = [];
+                updateCartUI();
+            }
+        }
+
+        function updateCartUI() {
+            const cartCount = document.getElementById('cartCount');
+            const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            if (currentPage === 'cart') {
+                renderCartPage();
+            }
+        }
+
+        function renderCategories(categories) {
+            const container = document.getElementById('categoriesContainer');
+            const filterContainer = document.getElementById('categoryFilter');
+            
+            if (categories.length === 0) {
+                container.innerHTML = '<div class="col-12 text-center"><p>No categories available</p></div>';
+                return;
+            }
+            
+            // Render category cards for home page
+            container.innerHTML = categories.map(category => `
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card category-card h-100 border-0 shadow-sm" onclick="filterByCategory(${category.id})">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">
+                                <i class="bi bi-basket fs-3 text-success"></i>
+                            </div>
+                            <h5 class="card-title">${category.name}</h5>
+                            <p class="card-text text-muted">${category.description || ''}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Update filter for products page
+            if (filterContainer) {
+                const categoryButtons = categories.map(category => `
+                    <button class="list-group-item list-group-item-action" data-category="${category.id}">
+                        ${category.name}
+                    </button>
+                `).join('');
+                
+                filterContainer.innerHTML = `
+                    <button class="list-group-item list-group-item-action active" data-category="">
+                        All Products
+                    </button>
+                    ${categoryButtons}
+                `;
+            }
+        }
+
+        function renderProducts(products, containerId) {
+            const container = document.getElementById(containerId);
+            
+            if (products.length === 0) {
+                container.innerHTML = '<div class="col-12 text-center"><p>No products found</p></div>';
+                return;
+            }
+            
+            container.innerHTML = products.map(product => `
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card product-card h-100 shadow-sm">
+                        <img src="${product.image_url || 'https://via.placeholder.com/200x150'}" 
+                             class="card-img-top" style="height: 200px; object-fit: cover;" 
+                             alt="${product.name}">
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title">${product.name}</h6>
+                            <p class="card-text text-muted small flex-grow-1">
+                                ${product.description || ''}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h6 mb-0 text-success">${formatPrice(product.price)}</span>
+                                <span class="badge bg-secondary">Stock: ${product.stock_quantity}</span>
+                            </div>
+                            <button class="btn btn-primary btn-sm mt-2" 
+                                    onclick="addToCart(${product.id})"
+                                    ${product.stock_quantity <= 0 ? 'disabled' : ''}>
+                                <i class="bi bi-cart-plus"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCartPage() {
+            const container = document.getElementById('cartItemsContainer');
+            const subtotalEl = document.getElementById('cartSubtotal');
+            const totalEl = document.getElementById('cartTotal');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            
+            if (cartItems.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="bi bi-cart-x display-1 text-muted"></i>
+                        <h4 class="mt-3">Your cart is empty</h4>
+                        <p class="text-muted">Start shopping to add items to your cart</p>
+                        <button class="btn btn-primary" onclick="showPage('home')">
+                            Continue Shopping
+                        </button>
+                    </div>
+                `;
+                subtotalEl.textContent = '$0.00';
+                totalEl.textContent = '$0.00';
+                checkoutBtn.disabled = true;
+                return;
+            }
+            
+            const total = cartItems.reduce((sum, item) => sum + item.subtotal, 0);
+            
+            container.innerHTML = cartItems.map(item => `
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                <img src="${item.product.image_url || 'https://via.placeholder.com/80x60'}" 
+                                     class="img-fluid rounded" alt="${item.product.name}">
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="mb-1">${item.product.name}</h6>
+                                <p class="text-muted mb-0">${formatPrice(item.product.price)} each</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group input-group-sm">
+                                    <button class="btn btn-outline-secondary" type="button" 
+                                            onclick="updateCartItem(${item.id}, ${item.quantity - 1})">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <input type="number" class="form-control text-center" 
+                                           value="${item.quantity}" min="1"
+                                           onchange="updateCartItem(${item.id}, this.value)">
+                                    <button class="btn btn-outline-secondary" type="button" 
+                                            onclick="updateCartItem(${item.id}, ${item.quantity + 1})">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>${formatPrice(item.subtotal)}</strong>
+                            </div>
+                            <div class="col-md-1">
+                                <button class="btn btn-outline-danger btn-sm" 
+                                        onclick="removeFromCart(${item.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            subtotalEl.textContent = formatPrice(total);
+            totalEl.textContent = formatPrice(total);
+            checkoutBtn.disabled = false;
+        }
+
+        // Event Handlers
+        function filterByCategory(categoryId) {
+            showPage('products');
+            loadProducts(categoryId).then(products => {
+                renderProducts(products, 'allProductsContainer');
+            });
+            
+            // Update active category in filter
+            document.querySelectorAll('#categoryFilter .list-group-item').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.category == categoryId) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check authentication status
+            await checkAuthStatus();
+            
+            // Load initial data
+            await loadCategories();
+            const products = await loadProducts();
+            
+            // Render initial content
+            renderCategories(allCategories);
+            renderProducts(products.slice(0, 8), 'featuredProductsContainer'); // Show first 8 as featured
+            renderProducts(products, 'allProductsContainer');
+            
+            // Event listeners
+            document.getElementById('loginBtn').addEventListener('click', () => {
+                new bootstrap.Modal(document.getElementById('loginModal')).show();
+            });
+            
+            document.getElementById('registerBtn').addEventListener('click', () => {
+                new bootstrap.Modal(document.getElementById('registerModal')).show();
+            });
+            
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            
+            document.getElementById('cartBtn').addEventListener('click', () => {
+                showPage('cart');
+            });
+            
+            document.getElementById('homeLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage('home');
+            });
+            
+            document.getElementById('productsLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage('products');
+            });
+            
+            document.getElementById('shopNowBtn').addEventListener('click', () => {
+                showPage('products');
+            });
+            
+            // Login form
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                try {
+                    await login(email, password);
+                    bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+                    document.getElementById('loginForm').reset();
+                } catch (error) {
+                    // Error handled in createOrder function
+                }
+            });
+            
+            // Modal switching
+            document.getElementById('showRegisterModal').addEventListener('click', (e) => {
+                e.preventDefault();
+                bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+                new bootstrap.Modal(document.getElementById('registerModal')).show();
+            });
+            
+            document.getElementById('showLoginModal').addEventListener('click', (e) => {
+                e.preventDefault();
+                bootstrap.Modal.getInstance(document.getElementById('registerModal')).hide();
+                new bootstrap.Modal(document.getElementById('loginModal')).show();
+            });
+            
+            // Sort functionality
+            document.getElementById('sortSelect').addEventListener('change', (e) => {
+                const sortBy = e.target.value;
+                let sortedProducts = [...allProducts];
+                
+                switch (sortBy) {
+                    case 'name':
+                        sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
+                        break;
+                    case 'price-low':
+                        sortedProducts.sort((a, b) => a.price - b.price);
+                        break;
+                    case 'price-high':
+                        sortedProducts.sort((a, b) => b.price - a.price);
+                        break;
+                }
+                
+                renderProducts(sortedProducts, 'allProductsContainer');
+            });
+        });
+    </script>
+</body>
+</html>) {
+                    // Error handled in login function
+                }
+            });
+            
+            // Register form
+            document.getElementById('registerForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const userData = {
+                    first_name: document.getElementById('registerFirstName').value,
+                    last_name: document.getElementById('registerLastName').value,
+                    email: document.getElementById('registerEmail').value,
+                    phone: document.getElementById('registerPhone').value,
+                    password: document.getElementById('registerPassword').value
+                };
+                
+                try {
+                    await register(userData);
+                    bootstrap.Modal.getInstance(document.getElementById('registerModal')).hide();
+                    document.getElementById('registerForm').reset();
+                } catch (error) {
+                    // Error handled in register function
+                }
+            });
+            
+            // Search form
+            document.getElementById('searchForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const query = document.getElementById('searchInput').value;
+                if (query.trim()) {
+                    showPage('products');
+                    const products = await loadProducts(null, query);
+                    renderProducts(products, 'allProductsContainer');
+                }
+            });
+            
+            // Category filter
+            document.addEventListener('click', (e) => {
+                if (e.target.matches('#categoryFilter .list-group-item')) {
+                    const categoryId = e.target.dataset.category;
+                    
+                    document.querySelectorAll('#categoryFilter .list-group-item').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    e.target.classList.add('active');
+                    
+                    loadProducts(categoryId || null).then(products => {
+                        renderProducts(products, 'allProductsContainer');
+                    });
+                }
+            });
+            
+            // Checkout
+            document.getElementById('checkoutBtn').addEventListener('click', () => {
+                if (!currentUser) {
+                    showToast('Please login to checkout', 'warning');
+                    return;
+                }
+                
+                const modal = new bootstrap.Modal(document.getElementById('checkoutModal'));
+                modal.show();
+                
+                // Update checkout summary
+                const summaryContainer = document.getElementById('checkoutSummary');
+                const totalEl = document.getElementById('checkoutTotal');
+                
+                const total = cartItems.reduce((sum, item) => sum + item.subtotal, 0);
+                
+                summaryContainer.innerHTML = cartItems.map(item => `
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>${item.product.name} × ${item.quantity}</span>
+                        <span>${formatPrice(item.subtotal)}</span>
+                    </div>
+                `).join('');
+                
+                totalEl.textContent = formatPrice(total);
+            });
+            
+            document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const shippingAddress = document.getElementById('shippingAddress').value;
+                
+                try {
+                    await createOrder(shippingAddress);
+                    bootstrap.Modal.getInstance(document.getElementById('checkoutModal')).hide();
+                    document.getElementById('checkoutForm').reset();
+                    showPage('home');
+                } catch (error
