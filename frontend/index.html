@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryMart - Online Grocery Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2d8f47;
+            --light-green: #e8f5e8;
+            --dark-green: #1e5f32;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-green) !important;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--light-green) 0%, #f8f9fa 100%);
+            padding: 80px 0;
+        }
+        
+        .hero-title {
+            color: var(--dark-green);
+            font-weight: bold;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--dark-green);
+            border-color: var(--dark-green);
+        }
+        
+        .category-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .product-card {
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .cart-badge {
+            background-color: #dc3545;
+            border-radius: 50%;
+        }
+        
+        .loading {
+            display: none;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        footer {
+            background-color: var(--dark-green);
+            color: white;
+            margin-top: 80px;
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--light-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#" id="brandLink">
+                <i class="bi bi-basket"></i> GroceryMart
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" id="homeLink">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#products" id="productsLink">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#categories" id="categoriesLink">Categories</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <!-- Search Bar -->
+                    <form class="d-flex me-3" id="searchForm">
+                        <input class="form-control" type="search" placeholder="Search products..." id="searchInput">
+                        <button class="btn btn-outline-success" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                    
+                    <!-- Cart -->
+                    <button class="btn btn-outline-primary position-relative me-3" id="cartBtn">
+                        <i class="bi bi-cart"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge cart-badge" id="cartCount">
+                            0
+                        </span>
+                    </button>
+                    
+                    <!-- User Menu -->
+                    <div class="dropdown" id="userMenu" style="display: none;">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person"></i> <span id="userName"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" id="profileLink">Profile</a></li>
+                            <li><a class="dropdown-item" href="#" id="ordersLink">Orders</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn">Logout</a></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Guest Menu -->
+                    <div id="guestMenu">
+                        <button class="btn btn-outline-primary me-2" id="loginBtn">Login</button>
+                        <button class="btn btn-primary" id="registerBtn">Sign Up</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Home Page -->
+        <div id="homePage">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6">
+                            <h1 class="hero-title display-4 mb-4">Fresh Groceries Delivered to Your Door</h1>
+                            <p class="lead text-muted mb-4">
+                                Shop from our wide selection of fresh produce, pantry essentials, and household items. 
+                                Fast delivery, competitive prices, and quality guaranteed.
+                            </p>
+                            <button class="btn btn-primary btn-lg" id="shopNowBtn">
+                                <i class="bi bi-basket"></i> Shop Now
+                            </button>
+                        </div>
+                        <div class="col-lg-6">
+                            <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&h=400&fit=crop" 
+                                 class="img-fluid rounded shadow" alt="Fresh Groceries">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="py-5">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-4">
+                            <div class="feature-icon">
+                                <i class="bi bi-truck fs-3 text-success"></i>
+                            </div>
+                            <h5>Free Delivery</h5>
+                            <p class="text-muted">Free delivery on orders over $50</p>
+                        </div>
+                        <div class="col-md-4 text-center mb-4">
+                            <div class="feature-icon">
+                                <i class="bi bi-shield-check fs-3 text-success"></i>
+                            </div>
+                            <h5>Quality Guaranteed</h5>
+                            <p class="text-muted">Fresh produce and quality products</p>
+                        </div>
+                        <div class="col-md-4 text-center mb-4">
+                            <div class="feature-icon">
+                                <i class="bi bi-clock fs-3 text-success"></i>
+                            </div>
+                            <h5>Same Day Delivery</h5>
+                            <p class="text-muted">Order before 2 PM for same day delivery</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Categories Section -->
+            <section class="py-5 bg-light" id="categories">
+                <div class="container">
+                    <h2 class="text-center mb-5">Shop by Category</h2>
+                    <div class="row" id="categoriesContainer">
+                        <div class="col-12 text-center">
+                            <div class="spinner-border text-primary loading show" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Products -->
+            <section class="py-5" id="products">
+                <div class="container">
+                    <h2 class="text-center mb-5">Featured Products</h2>
+                    <div class="row" id="featuredProductsContainer">
+                        <div class="col-12 text-center">
+                            <div class="spinner-border text-primary loading show" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Products Page -->
+        <div id="productsPage" style="display: none;">
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5>Filter by Category</h5>
