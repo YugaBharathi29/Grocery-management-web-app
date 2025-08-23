@@ -424,6 +424,36 @@
                 throw error;
             }
         }
+        }
+    }
+    
+    // ADD THE NEW ADMIN FUNCTIONS HERE:
+    
+    // REPLACE editProduct function (find it further down in your file)
+    async function editProduct(productId) {
+        const product = allProducts.find(p => p.id === productId);
+        if (!product) return;
+        
+        // Populate edit form with current product data
+        document.getElementById('productName').value = product.name;
+        document.getElementById('productDescription').value = product.description || '';
+        document.getElementById('productPrice').value = product.price;
+        document.getElementById('productStock').value = product.stock_quantity;
+        document.getElementById('productCategory').value = product.category_id;
+        document.getElementById('productImage').value = product.image_url || '';
+        document.getElementById('productSku').value = product.sku || '';
+        
+        // Change modal title and form behavior
+        document.querySelector('#addProductModal .modal-title').textContent = 'Edit Product';
+        document.getElementById('addProductForm').dataset.editId = productId;
+        
+        // Show modal
+        new bootstrap.Modal(document.getElementById('addProductModal')).show();
+    }
+    
+    // ... (add the rest of the functions here)
+    
+    // Utility functions
         
         // Utility functions
         function showToast(message, type = 'info') {
